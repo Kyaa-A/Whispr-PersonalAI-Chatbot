@@ -18,4 +18,4 @@ export const UI_CONFIG = {
   COPY_SUCCESS_DURATION: 2000,
   HEADER_HEIGHT: "80px",
   INPUT_HEIGHT: "120px",
-}; 
+};

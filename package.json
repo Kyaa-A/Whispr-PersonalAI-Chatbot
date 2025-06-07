@@ -54,10 +54,10 @@
       "build/**/*",
       "public/main.js",
       "public/preload.js",
-      "public/icon.png",
+      "src/Image/Whispr-no-bg.png",
       "node_modules/**/*"
     ],
-    "icon": "public/icon.png",
+    "icon": "src/Image/Whispr-no-bg.png",
     "mac": {
       "category": "public.app-category.productivity"
     },
