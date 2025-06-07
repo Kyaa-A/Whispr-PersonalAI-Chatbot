@@ -1,0 +1,14 @@
+{
+  "name": "whispr-portable",
+  "version": "1.0.0",
+  "description": "Whispr Personal AI Chatbot - Portable Version",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.2.1",
+    "dotenv": "^16.5.0",
+    "electron": "^27.0.0"
+  }
+} 

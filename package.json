@@ -11,8 +11,8 @@
     "electron-build": "npm run react-build && electron-builder",
     "electron-dev": "ELECTRON_IS_DEV=true electron .",
     "build": "npm run react-build",
-    "dist": "npm run build && electron-builder --publish=never",
-    "pack": "npm run build && electron-builder --dir"
+    "dist": "echo 'Use the Whispr-Portable folder instead!'",
+    "pack": "echo 'Use the Whispr-Portable folder instead!'"
   },
   "keywords": [
     "electron",
@@ -55,10 +55,10 @@
   },
   "build": {
     "appId": "com.yourcompany.whispr",
-    "productName": "Whispr - Personal AI Chatbot",
-    "directories": {
-      "output": "dist-new"
-    },
+    "productName": "Whispr Personal AI Chatbot",
+          "directories": {
+        "output": "dist-production"
+      },
     "files": [
       "build/**/*",
       "public/main.js",
@@ -70,10 +70,21 @@
     "extraMetadata": {
       "main": "public/main.js"
     },
+    "extraFiles": [
+      {
+        "from": ".env",
+        "to": "public/.env"
+      },
+      {
+        "from": ".env",
+        "to": ".env"
+      }
+    ],
     "icon": "src/Image/Whispr-no-bg.png",
     "win": {
-      "target": "nsis",
-      "publish": null
+      "target": "portable",
+      "publish": null,
+      "sign": false
     },
     "nsis": {
       "oneClick": false,
