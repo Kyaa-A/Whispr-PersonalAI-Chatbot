@@ -1,5 +1,6 @@
 import React from "react";
-import { isLongMessage, getPreviewText, formatTime } from "../../utils/messageUtils";
+import { isLongMessage, formatTime } from "../../utils/messageUtils";
+import { formatText, formatPreviewText } from "../../utils/textFormatter";
 
 const Message = ({ message, onOpenModal }) => {
   return (
@@ -30,7 +31,7 @@ const Message = ({ message, onOpenModal }) => {
           WebkitUserSelect: "text",
         }}
       >
-        <p
+        <div
           style={{
             fontSize: "14px",
             lineHeight: "1.6",
@@ -40,8 +41,10 @@ const Message = ({ message, onOpenModal }) => {
             cursor: "text",
           }}
         >
-          {isLongMessage(message.text) ? getPreviewText(message.text) : message.text}
-        </p>
+          {isLongMessage(message.text) 
+            ? <div style={{ opacity: 0.95 }}>{formatPreviewText(message.text)}</div>
+            : formatText(message.text)}
+        </div>
         {isLongMessage(message.text) && (
           <button
             onClick={() =>

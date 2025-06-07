@@ -1,5 +1,6 @@
 import React from "react";
 import { useCopyToClipboard } from "../../hooks/useCopyToClipboard";
+import { formatText } from "../../utils/textFormatter";
 
 const Modal = ({ isOpen, content, onClose }) => {
   const { copyToClipboard, showCopySuccess, showCopyError } = useCopyToClipboard();
@@ -128,7 +129,7 @@ const Modal = ({ isOpen, content, onClose }) => {
             color: "white",
             fontSize: "14px",
             lineHeight: "1.6",
-            fontFamily: "monospace",
+            fontFamily: "system-ui, -apple-system, sans-serif",
             userSelect: "text",
             WebkitUserSelect: "text",
             MozUserSelect: "text",
@@ -137,10 +138,10 @@ const Modal = ({ isOpen, content, onClose }) => {
           }}
           className="chat-scrollbar"
         >
-          <pre
+          <div
             className="modal-content-text"
             style={{
-              whiteSpace: "pre-wrap",
+              whiteSpace: "normal",
               wordWrap: "break-word",
               margin: 0,
               fontFamily: "inherit",
@@ -152,8 +153,8 @@ const Modal = ({ isOpen, content, onClose }) => {
               outline: "none",
             }}
           >
-            {content?.content}
-          </pre>
+            {formatText(content?.content)}
+          </div>
         </div>
 
         {/* Modal Footer */}
