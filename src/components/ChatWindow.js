@@ -67,6 +67,8 @@ const ChatWindow = () => {
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [autoScroll, setAutoScroll] = useState(true);
+  const [modalContent, setModalContent] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
 
@@ -210,6 +212,29 @@ const ChatWindow = () => {
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
+  // Helper function to check if message is long (code or long text)
+  const isLongMessage = (text) => {
+    return text.length > 200 || text.includes('```') || text.includes('function') || text.includes('class') || text.includes('import') || text.includes('const') || text.includes('let') || text.includes('var');
+  };
+
+  // Helper function to get preview text
+  const getPreviewText = (text) => {
+    if (text.length <= 200) return text;
+    return text.substring(0, 200) + '...';
+  };
+
+  // Handle opening modal with full content
+  const openModal = (content, title = "Full Content") => {
+    setModalContent({ content, title });
+    setIsModalOpen(true);
+  };
+
+  // Handle closing modal
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setModalContent(null);
+  };
+
   return (
     <div
       style={{
@@ -350,8 +375,29 @@ const ChatWindow = () => {
                   cursor: "text",
                 }}
               >
-                {message.text}
+                {isLongMessage(message.text) ? getPreviewText(message.text) : message.text}
               </p>
+              {isLongMessage(message.text) && (
+                <button
+                  onClick={() => openModal(message.text, message.sender === 'user' ? 'Your Message' : 'Whispr Response')}
+                  style={{
+                    background: 'rgba(59, 130, 246, 0.8)',
+                    border: 'none',
+                    borderRadius: '4px',
+                    color: 'white',
+                    padding: '4px 8px',
+                    fontSize: '12px',
+                    cursor: 'pointer',
+                    marginTop: '4px',
+                    transition: 'background-color 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.target.style.background = 'rgba(59, 130, 246, 1)'}
+                  onMouseLeave={(e) => e.target.style.background = 'rgba(59, 130, 246, 0.8)'}
+                  className="no-drag"
+                >
+                  Click here to fully view...
+                </button>
+              )}
               <p
                 style={{
                   fontSize: "12px",
@@ -540,6 +586,139 @@ const ChatWindow = () => {
           </button>
         </div>
       </div>
+
+      {/* Modal for viewing full content */}
+      {isModalOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            zIndex: 1000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px'
+          }}
+          onClick={closeModal}
+          className="no-drag"
+        >
+          <div
+            style={{
+              backgroundColor: '#1e293b',
+              borderRadius: '12px',
+              width: '90%',
+              maxWidth: '800px',
+              maxHeight: '90%',
+              border: '2px solid #334155',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+              display: 'flex',
+              flexDirection: 'column'
+            }}
+            onClick={(e) => e.stopPropagation()}
+            className="no-drag"
+          >
+            {/* Modal Header */}
+            <div
+              style={{
+                padding: '20px',
+                borderBottom: '1px solid #334155',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}
+            >
+              <h3 style={{
+                margin: 0,
+                color: 'white',
+                fontSize: '18px',
+                fontWeight: '600'
+              }}>
+                {modalContent?.title || 'Full Content'}
+              </h3>
+              <button
+                onClick={closeModal}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#64748b',
+                  fontSize: '24px',
+                  cursor: 'pointer',
+                  padding: '0',
+                  width: '30px',
+                  height: '30px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: '4px',
+                  transition: 'color 0.2s'
+                }}
+                onMouseEnter={(e) => e.target.style.color = 'white'}
+                onMouseLeave={(e) => e.target.style.color = '#64748b'}
+                className="no-drag"
+              >
+                ×
+              </button>
+            </div>
+            
+            {/* Modal Content */}
+            <div
+              style={{
+                padding: '20px',
+                overflowY: 'auto',
+                maxHeight: 'calc(90vh - 120px)',
+                color: 'white',
+                fontSize: '14px',
+                lineHeight: '1.6',
+                fontFamily: 'monospace'
+              }}
+              className="chat-scrollbar"
+            >
+              <pre style={{
+                whiteSpace: 'pre-wrap',
+                wordWrap: 'break-word',
+                margin: 0,
+                fontFamily: 'inherit'
+              }}>
+                {modalContent?.content}
+              </pre>
+            </div>
+            
+            {/* Modal Footer */}
+            <div
+              style={{
+                padding: '20px',
+                borderTop: '1px solid #334155',
+                display: 'flex',
+                justifyContent: 'flex-end'
+              }}
+            >
+              <button
+                onClick={closeModal}
+                style={{
+                  backgroundColor: '#3b82f6',
+                  color: 'white',
+                  border: 'none',
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  transition: 'background-color 0.2s'
+                }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
+                className="no-drag"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
