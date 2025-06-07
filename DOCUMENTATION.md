@@ -590,7 +590,7 @@ npm install           # Install dependencies
 
 ---
 
-*This documentation is your complete guide to understanding, maintaining, and extending the Whispr desktop chatbot. Keep it handy and update it as you make changes!* 🚀
+*This documentation is complete guide to understanding, maintaining, and extending the Whispr desktop chatbot* 🚀
 
 **Last Updated**: December 2024  
 **Version**: 1.0  

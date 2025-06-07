@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Whispr - Personal AI Chatbot built with Electron and React",
   "main": "public/main.js",
+  "homepage": "./",
   "scripts": {
     "start": "concurrently \"npm run react-start\" \"wait-on http://localhost:3000 && electron .\"",
     "react-start": "react-scripts start",
@@ -48,21 +49,30 @@
     "appId": "com.yourcompany.whispr",
     "productName": "Whispr - Personal AI Chatbot",
     "directories": {
-      "output": "dist"
+      "output": "dist-new"
     },
     "files": [
       "build/**/*",
       "public/main.js",
       "public/preload.js",
-      "src/Image/Whispr-no-bg.png",
-      "node_modules/**/*"
+      "src/Image/**/*",
+      "node_modules/**/*",
+      "!node_modules/.cache"
     ],
+    "extraMetadata": {
+      "main": "public/main.js"
+    },
     "icon": "src/Image/Whispr-no-bg.png",
+    "win": {
+      "target": "nsis",
+      "publish": null
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
     "mac": {
       "category": "public.app-category.productivity"
-    },
-    "win": {
-      "target": "nsis"
     },
     "linux": {
       "target": "AppImage"
