@@ -1,4 +1,4 @@
-# Desktop Chatbot
+# 🤖 Whispr - Desktop AI Chatbot
 
 A modern desktop chatbot application built with Electron, React, and Tailwind CSS, powered by Google Gemini AI. Features a floating window that can be toggled with global hotkeys and runs in the system tray.
 
