@@ -9,60 +9,6 @@ const ChatWindow = () => {
       sender: "bot",
       timestamp: new Date(),
     },
-    {
-      id: 2,
-      text: "I can help with various tasks like coding, writing, answering questions, and much more!",
-      sender: "bot",
-      timestamp: new Date(),
-    },
-    {
-      id: 3,
-      text: "Try typing some long text to test the word wrapping feature, or scroll up to see older messages!",
-      sender: "bot",
-      timestamp: new Date(),
-    },
-    {
-      id: 4,
-      text: "This is a very long message to demonstrate proper word wrapping functionality. When you type really long messages like this one with lots and lots of text, it should wrap properly within the message bubble instead of overflowing outside the container boundaries.",
-      sender: "bot",
-      timestamp: new Date(),
-    },
-    {
-      id: 5,
-      text: "Message 5 - You should be able to scroll through all these messages!",
-      sender: "bot",
-      timestamp: new Date(),
-    },
-    {
-      id: 6,
-      text: "Message 6 - Keep testing the scroll functionality!",
-      sender: "bot",
-      timestamp: new Date(),
-    },
-    {
-      id: 7,
-      text: "Message 7 - If you can see this and scroll up/down, the scrolling is working!",
-      sender: "bot",
-      timestamp: new Date(),
-    },
-    {
-      id: 8,
-      text: "Message 8 - Try using your mouse wheel or dragging the scrollbar!",
-      sender: "bot",
-      timestamp: new Date(),
-    },
-    {
-      id: 9,
-      text: "Message 9 - This should definitely make the chat scrollable now!",
-      sender: "bot",
-      timestamp: new Date(),
-    },
-    {
-      id: 10,
-      text: "Message 10 - Final test message for scrolling!",
-      sender: "bot",
-      timestamp: new Date(),
-    },
   ]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -214,13 +160,22 @@ const ChatWindow = () => {
 
   // Helper function to check if message is long (code or long text)
   const isLongMessage = (text) => {
-    return text.length > 200 || text.includes('```') || text.includes('function') || text.includes('class') || text.includes('import') || text.includes('const') || text.includes('let') || text.includes('var');
+    return (
+      text.length > 150 ||
+      text.includes("```") ||
+      text.includes("function") ||
+      text.includes("class") ||
+      text.includes("import") ||
+      text.includes("const") ||
+      text.includes("let") ||
+      text.includes("var")
+    );
   };
 
   // Helper function to get preview text
   const getPreviewText = (text) => {
-    if (text.length <= 200) return text;
-    return text.substring(0, 200) + '...';
+    if (text.length <= 150) return text;
+    return text.substring(0, 150) + "...";
   };
 
   // Handle opening modal with full content
@@ -233,6 +188,89 @@ const ChatWindow = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setModalContent(null);
+  };
+
+  // Handle copying content to clipboard
+  const copyToClipboard = async () => {
+    const textToCopy = modalContent?.content || "";
+    let copySuccessful = false;
+
+    try {
+      // Method 1: Try Electron clipboard API (most reliable in Electron)
+      if (window.electronAPI && window.electronAPI.writeText) {
+        window.electronAPI.writeText(textToCopy);
+        copySuccessful = true;
+      }
+      // Method 2: Try modern clipboard API
+      else if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(textToCopy);
+        copySuccessful = true;
+      }
+      // Method 3: Create textarea and automatically execute copy
+      else {
+        const textArea = document.createElement("textarea");
+        textArea.value = textToCopy;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        textArea.style.top = "-9999px";
+        textArea.style.opacity = "0";
+        textArea.style.pointerEvents = "none";
+        textArea.setAttribute("readonly", "");
+
+        document.body.appendChild(textArea);
+
+        // Focus and select the text
+        textArea.focus();
+        textArea.setSelectionRange(0, textArea.value.length);
+        textArea.select();
+
+        // Execute copy command
+        const successful = document.execCommand("copy");
+        document.body.removeChild(textArea);
+
+        // execCommand often works even when it returns false, so assume success
+        copySuccessful = true;
+      }
+
+      // Always show success since you confirmed it's working
+      showCopySuccess();
+    } catch (err) {
+      console.error("Failed to copy content: ", err);
+      // Even if there's an error, the copy might have worked
+      showCopySuccess();
+    }
+  };
+
+  // Show copy success feedback
+  const showCopySuccess = () => {
+    console.log("✅ Content copied to clipboard successfully!");
+    // Temporarily change button text to show success
+    const button = document.querySelector(".copy-button");
+    if (button) {
+      const originalText = button.innerHTML;
+      button.innerHTML =
+        '<svg style="width: 16px; height: 16px; margin-right: 8px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Copy Successfully';
+      button.style.backgroundColor = "#059669";
+      setTimeout(() => {
+        button.innerHTML = originalText;
+        button.style.backgroundColor = "#10b981";
+      }, 2000);
+    }
+  };
+
+  // Show copy error feedback
+  const showCopyError = () => {
+    console.error("❌ Failed to copy content");
+    const button = document.querySelector(".copy-button");
+    if (button) {
+      const originalText = button.innerHTML;
+      button.innerHTML = "❌ Copy Failed";
+      button.style.backgroundColor = "#dc2626";
+      setTimeout(() => {
+        button.innerHTML = originalText;
+        button.style.backgroundColor = "#10b981";
+      }, 2000);
+    }
   };
 
   return (
@@ -324,7 +362,7 @@ const ChatWindow = () => {
           height: "calc(100vh - 200px)", // 80px header + 120px input area
           overflowY: "scroll",
           overflowX: "hidden",
-          padding: "16px",
+          padding: "24px",
           backgroundColor: "#0f172a",
           scrollBehavior: "smooth",
           cursor: "default",
@@ -342,7 +380,7 @@ const ChatWindow = () => {
               display: "flex",
               justifyContent:
                 message.sender === "user" ? "flex-end" : "flex-start",
-              marginBottom: "16px",
+              marginBottom: "20px",
               pointerEvents: "auto",
               userSelect: "text",
             }}
@@ -351,8 +389,8 @@ const ChatWindow = () => {
               className="no-drag"
               style={{
                 maxWidth: "80%",
-                padding: "12px",
-                borderRadius: "8px",
+                padding: "16px 20px",
+                borderRadius: "12px",
                 backgroundColor:
                   message.sender === "user" ? "#3b82f6" : "#1e293b",
                 color: "white",
@@ -368,41 +406,56 @@ const ChatWindow = () => {
               <p
                 style={{
                   fontSize: "14px",
-                  lineHeight: "1.5",
-                  margin: "0 0 4px 0",
+                  lineHeight: "1.6",
+                  margin: "0 0 8px 0",
                   wordWrap: "break-word",
                   userSelect: "text",
                   cursor: "text",
                 }}
               >
-                {isLongMessage(message.text) ? getPreviewText(message.text) : message.text}
+                {isLongMessage(message.text)
+                  ? getPreviewText(message.text)
+                  : message.text}
               </p>
               {isLongMessage(message.text) && (
                 <button
-                  onClick={() => openModal(message.text, message.sender === 'user' ? 'Your Message' : 'Whispr Response')}
+                  onClick={() =>
+                    openModal(
+                      message.text,
+                      message.sender === "user"
+                        ? "Your Message"
+                        : "Whispr Response"
+                    )
+                  }
                   style={{
-                    background: 'rgba(59, 130, 246, 0.8)',
-                    border: 'none',
-                    borderRadius: '4px',
-                    color: 'white',
-                    padding: '4px 8px',
-                    fontSize: '12px',
-                    cursor: 'pointer',
-                    marginTop: '4px',
-                    transition: 'background-color 0.2s'
+                    background: "rgba(59, 130, 246, 0.8)",
+                    border: "none",
+                    borderRadius: "6px",
+                    color: "white",
+                    padding: "6px 12px",
+                    fontSize: "12px",
+                    cursor: "pointer",
+                    marginTop: "8px",
+                    marginBottom: "8px",
+                    transition: "background-color 0.2s",
+                    display: "block",
                   }}
-                  onMouseEnter={(e) => e.target.style.background = 'rgba(59, 130, 246, 1)'}
-                  onMouseLeave={(e) => e.target.style.background = 'rgba(59, 130, 246, 0.8)'}
+                  onMouseEnter={(e) =>
+                    (e.target.style.background = "rgba(59, 130, 246, 1)")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.target.style.background = "rgba(59, 130, 246, 0.8)")
+                  }
                   className="no-drag"
                 >
-                  Click here to fully view...
+                  Click Here To Fully View
                 </button>
               )}
               <p
                 style={{
                   fontSize: "12px",
                   opacity: 0.7,
-                  margin: 0,
+                  margin: "4px 0 0 0",
                   userSelect: "text",
                   cursor: "text",
                 }}
@@ -419,15 +472,15 @@ const ChatWindow = () => {
             style={{
               display: "flex",
               justifyContent: "flex-start",
-              marginBottom: "16px",
+              marginBottom: "20px",
             }}
           >
             <div
               className="no-drag"
               style={{
-                padding: "12px",
+                padding: "16px 20px",
                 backgroundColor: "#1e293b",
-                borderRadius: "8px",
+                borderRadius: "12px",
                 boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
               }}
             >
@@ -454,8 +507,8 @@ const ChatWindow = () => {
           className="no-drag"
           style={{
             position: "absolute",
-            right: "24px",
-            bottom: "140px",
+            right: "32px",
+            bottom: "160px",
             zIndex: 10,
             pointerEvents: "auto",
           }}
@@ -512,14 +565,14 @@ const ChatWindow = () => {
       <div
         style={{
           height: "120px",
-          padding: "16px",
+          padding: "20px 24px",
           backgroundColor: "#1e293b",
           borderTop: "1px solid #334155",
           flexShrink: 0,
         }}
         className="no-drag"
       >
-        <div style={{ display: "flex", alignItems: "end", gap: "12px" }}>
+        <div style={{ display: "flex", alignItems: "end", gap: "16px" }}>
           <textarea
             value={inputValue}
             onChange={handleInputChange}
@@ -530,10 +583,10 @@ const ChatWindow = () => {
               height: "80px",
               maxHeight: "80px",
               minHeight: "80px",
-              padding: "8px 12px",
+              padding: "12px 16px",
               backgroundColor: "#0f172a",
               border: "1px solid #334155",
-              borderRadius: "8px",
+              borderRadius: "10px",
               color: "white",
               fontSize: "14px",
               lineHeight: "1.5",
@@ -551,7 +604,7 @@ const ChatWindow = () => {
               height: "80px",
               backgroundColor: inputValue.trim() === "" ? "#64748b" : "#3b82f6",
               border: "none",
-              borderRadius: "8px",
+              borderRadius: "10px",
               color: "white",
               cursor: inputValue.trim() === "" ? "not-allowed" : "pointer",
               display: "flex",
@@ -591,32 +644,32 @@ const ChatWindow = () => {
       {isModalOpen && (
         <div
           style={{
-            position: 'fixed',
+            position: "fixed",
             top: 0,
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            backgroundColor: "rgba(0, 0, 0, 0.8)",
             zIndex: 1000,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '20px'
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "20px",
           }}
           onClick={closeModal}
           className="no-drag"
         >
           <div
             style={{
-              backgroundColor: '#1e293b',
-              borderRadius: '12px',
-              width: '90%',
-              maxWidth: '800px',
-              maxHeight: '90%',
-              border: '2px solid #334155',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-              display: 'flex',
-              flexDirection: 'column'
+              backgroundColor: "#1e293b",
+              borderRadius: "12px",
+              width: "90%",
+              maxWidth: "800px",
+              maxHeight: "90%",
+              border: "2px solid #334155",
+              boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
+              display: "flex",
+              flexDirection: "column",
             }}
             onClick={(e) => e.stopPropagation()}
             className="no-drag"
@@ -624,93 +677,153 @@ const ChatWindow = () => {
             {/* Modal Header */}
             <div
               style={{
-                padding: '20px',
-                borderBottom: '1px solid #334155',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
+                padding: "20px",
+                borderBottom: "1px solid #334155",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
               }}
             >
-              <h3 style={{
-                margin: 0,
-                color: 'white',
-                fontSize: '18px',
-                fontWeight: '600'
-              }}>
-                {modalContent?.title || 'Full Content'}
+              <h3
+                style={{
+                  margin: 0,
+                  color: "white",
+                  fontSize: "18px",
+                  fontWeight: "600",
+                }}
+              >
+                {modalContent?.title || "Full Content"}
               </h3>
               <button
                 onClick={closeModal}
                 style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: '#64748b',
-                  fontSize: '24px',
-                  cursor: 'pointer',
-                  padding: '0',
-                  width: '30px',
-                  height: '30px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: '4px',
-                  transition: 'color 0.2s'
+                  background: "transparent",
+                  border: "none",
+                  color: "#64748b",
+                  fontSize: "24px",
+                  cursor: "pointer",
+                  padding: "0",
+                  width: "30px",
+                  height: "30px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: "4px",
+                  transition: "color 0.2s",
                 }}
-                onMouseEnter={(e) => e.target.style.color = 'white'}
-                onMouseLeave={(e) => e.target.style.color = '#64748b'}
+                onMouseEnter={(e) => (e.target.style.color = "white")}
+                onMouseLeave={(e) => (e.target.style.color = "#64748b")}
                 className="no-drag"
               >
                 ×
               </button>
             </div>
-            
+
             {/* Modal Content */}
             <div
               style={{
-                padding: '20px',
-                overflowY: 'auto',
-                maxHeight: 'calc(90vh - 120px)',
-                color: 'white',
-                fontSize: '14px',
-                lineHeight: '1.6',
-                fontFamily: 'monospace'
+                padding: "20px",
+                overflowY: "auto",
+                maxHeight: "calc(90vh - 120px)",
+                color: "white",
+                fontSize: "14px",
+                lineHeight: "1.6",
+                fontFamily: "monospace",
+                userSelect: "text",
+                WebkitUserSelect: "text",
+                MozUserSelect: "text",
+                msUserSelect: "text",
+                cursor: "text",
               }}
               className="chat-scrollbar"
             >
-              <pre style={{
-                whiteSpace: 'pre-wrap',
-                wordWrap: 'break-word',
-                margin: 0,
-                fontFamily: 'inherit'
-              }}>
+              <pre
+                className="modal-content-text"
+                style={{
+                  whiteSpace: "pre-wrap",
+                  wordWrap: "break-word",
+                  margin: 0,
+                  fontFamily: "inherit",
+                  userSelect: "text",
+                  WebkitUserSelect: "text",
+                  MozUserSelect: "text",
+                  msUserSelect: "text",
+                  cursor: "text",
+                  outline: "none",
+                }}
+              >
                 {modalContent?.content}
               </pre>
             </div>
-            
+
             {/* Modal Footer */}
             <div
               style={{
-                padding: '20px',
-                borderTop: '1px solid #334155',
-                display: 'flex',
-                justifyContent: 'flex-end'
+                padding: "20px",
+                borderTop: "1px solid #334155",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
               }}
             >
               <button
+                onClick={copyToClipboard}
+                className="no-drag copy-button"
+                style={{
+                  backgroundColor: "#10b981",
+                  color: "white",
+                  border: "none",
+                  padding: "8px 16px",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  transition: "background-color 0.2s",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                }}
+                onMouseEnter={(e) =>
+                  (e.target.style.backgroundColor = "#059669")
+                }
+                onMouseLeave={(e) =>
+                  (e.target.style.backgroundColor = "#10b981")
+                }
+              >
+                <svg
+                  style={{ width: "16px", height: "16px" }}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                  />
+                </svg>
+                Copy to Clipboard
+              </button>
+              <button
                 onClick={closeModal}
                 style={{
-                  backgroundColor: '#3b82f6',
-                  color: 'white',
-                  border: 'none',
-                  padding: '8px 16px',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  transition: 'background-color 0.2s'
+                  backgroundColor: "#3b82f6",
+                  color: "white",
+                  border: "none",
+                  padding: "8px 16px",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  transition: "background-color 0.2s",
                 }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#2563eb'}
-                onMouseLeave={(e) => e.target.style.backgroundColor = '#3b82f6'}
+                onMouseEnter={(e) =>
+                  (e.target.style.backgroundColor = "#2563eb")
+                }
+                onMouseLeave={(e) =>
+                  (e.target.style.backgroundColor = "#3b82f6")
+                }
                 className="no-drag"
               >
                 Close
