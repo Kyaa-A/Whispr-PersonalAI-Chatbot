@@ -2,6 +2,9 @@
 
 A modern desktop chatbot application built with Electron, React, and Tailwind CSS, powered by Google Gemini AI. Features a floating window that can be toggled with global hotkeys and runs in the system tray.
 
+![Image](https://github.com/user-attachments/assets/8bf215f2-57fc-4e49-8704-5c5f3353ec2a)
+![Image](https://github.com/user-attachments/assets/0261b34c-e138-4e27-a9c1-3c00f559666f)
+
 ## Features
 
 - 🤖 **AI-Powered**: Full integration with Google Gemini AI for intelligent conversations
