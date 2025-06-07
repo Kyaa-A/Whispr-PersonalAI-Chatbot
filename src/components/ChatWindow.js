@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
+import WhisprIcon from "../Image/Whispr-no-bg.png";
 
 const ChatWindow = () => {
   const [messages, setMessages] = useState([
     {
       id: 1,
-      text: "Hello! I'm Dialogix, your AI desktop assistant powered by Google Gemini. How can I assist you today?",
+      text: "Hello! I'm Whispr, your personal AI chatbot. How can I assist you today?",
       sender: "bot",
       timestamp: new Date(),
     },
@@ -38,7 +39,24 @@ const ChatWindow = () => {
       sender: "bot",
       timestamp: new Date(),
     },
-
+    {
+      id: 7,
+      text: "Message 7 - If you can see this and scroll up/down, the scrolling is working!",
+      sender: "bot",
+      timestamp: new Date(),
+    },
+    {
+      id: 8,
+      text: "Message 8 - Try using your mouse wheel or dragging the scrollbar!",
+      sender: "bot",
+      timestamp: new Date(),
+    },
+    {
+      id: 9,
+      text: "Message 9 - This should definitely make the chat scrollable now!",
+      sender: "bot",
+      timestamp: new Date(),
+    },
     {
       id: 10,
       text: "Message 10 - Final test message for scrolling!",
@@ -61,11 +79,16 @@ const ChatWindow = () => {
 
   const handleScroll = () => {
     if (messagesContainerRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current;
-      console.log('Scroll detected:', { scrollTop, scrollHeight, clientHeight });
+      const { scrollTop, scrollHeight, clientHeight } =
+        messagesContainerRef.current;
+      console.log("Scroll detected:", {
+        scrollTop,
+        scrollHeight,
+        clientHeight,
+      });
       // Check if user is near the bottom (within 100px)
       const isNearBottom = scrollTop + clientHeight >= scrollHeight - 100;
-      console.log('Is near bottom:', isNearBottom);
+      console.log("Is near bottom:", isNearBottom);
       setAutoScroll(isNearBottom);
     }
   };
@@ -95,31 +118,33 @@ const ChatWindow = () => {
           clientHeight: container.clientHeight,
           canScroll: container.scrollHeight > container.clientHeight,
           currentScrollTop: container.scrollTop,
-          maxScroll: container.scrollHeight - container.clientHeight
+          maxScroll: container.scrollHeight - container.clientHeight,
         };
-        console.log('Container scrollable state:', scrollInfo);
-        
+        console.log("Container scrollable state:", scrollInfo);
+
         // Test scrolling manually
         window.testScroll = () => {
-          console.log('Testing scroll...');
+          console.log("Testing scroll...");
           container.scrollTop = container.scrollHeight;
-          console.log('Scrolled to:', container.scrollTop);
+          console.log("Scrolled to:", container.scrollTop);
         };
-        
+
         // Test scroll up to show button
         window.testScrollUp = () => {
-          console.log('Testing scroll up...');
+          console.log("Testing scroll up...");
           container.scrollTop = 0;
-          console.log('Scrolled to top:', container.scrollTop);
+          console.log("Scrolled to top:", container.scrollTop);
         };
-        
+
         // Test if we can scroll
         if (scrollInfo.canScroll) {
-          console.log('✅ Container is scrollable');
-          console.log('📝 Type window.testScrollUp() to scroll up and see the button');
-          console.log('📝 Type window.testScroll() to scroll down');
+          console.log("✅ Container is scrollable");
+          console.log(
+            "📝 Type window.testScrollUp() to scroll up and see the button"
+          );
+          console.log("📝 Type window.testScroll() to scroll down");
         } else {
-          console.log('❌ Container is NOT scrollable - check content height');
+          console.log("❌ Container is NOT scrollable - check content height");
         }
       }, 500);
     }
@@ -186,50 +211,38 @@ const ChatWindow = () => {
   };
 
   return (
-    <div 
+    <div
       style={{
-        width: '100vw',
-        height: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        backgroundColor: '#0f172a',
-        color: 'white'
+        width: "100vw",
+        height: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        backgroundColor: "#0f172a",
+        color: "white",
       }}
       className="animate-slide-up"
     >
       {/* Header */}
-      <div 
+      <div
         style={{
-          height: '80px',
-          padding: '16px',
-          backgroundColor: '#1e293b',
-          borderBottom: '1px solid #334155',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexShrink: 0
+          height: "80px",
+          padding: "16px",
+          backgroundColor: "#1e293b",
+          borderBottom: "1px solid #334155",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexShrink: 0,
         }}
         className="no-drag"
       >
         <div className="flex items-center space-x-3">
-          <div className="flex justify-center items-center w-8 h-8 rounded-full bg-chat-primary">
-            <svg 
-              className="w-5 h-5 text-white" 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
-            >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={2} 
-                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" 
-              />
-            </svg>
+          <div className="flex justify-center items-center w-10 h-10 rounded-full shadow-black">
+            <img src={WhisprIcon} alt="Whispr Icon" className="w-max h-max" />
           </div>
           <div>
-            <h1 className="text-lg font-semibold">AI Assistant</h1>
-            <p className="text-xs text-chat-secondary">Always ready to help</p>
+            <h1 className="text-lg font-semibold">Whispr</h1>
+            <p className="text-xs text-chat-secondary">Personal AI Chatbot</p>
           </div>
         </div>
         <div className="flex items-center space-x-2">
@@ -241,8 +254,18 @@ const ChatWindow = () => {
             className="flex justify-center items-center w-6 h-6 bg-yellow-500 rounded-full transition-colors duration-200 hover:bg-yellow-600"
             title="Minimize"
           >
-            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+            <svg
+              className="w-3 h-3 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M20 12H4"
+              />
             </svg>
           </button>
           <button
@@ -250,30 +273,40 @@ const ChatWindow = () => {
             className="flex justify-center items-center w-6 h-6 bg-red-500 rounded-full transition-colors duration-200 hover:bg-red-600"
             title="Close"
           >
-            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-3 h-3 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
       </div>
 
       {/* Messages Area - Fixed height approach */}
-      <div 
+      <div
         ref={messagesContainerRef}
         onScroll={handleScroll}
         className="chat-scrollbar no-drag"
         style={{
-          height: 'calc(100vh - 200px)', // 80px header + 120px input area
-          overflowY: 'scroll',
-          overflowX: 'hidden',
-          padding: '16px',
-          backgroundColor: '#0f172a',
-          scrollBehavior: 'smooth',
-          cursor: 'default',
-          userSelect: 'text',
-          WebkitUserSelect: 'text',
-          MozUserSelect: 'text',
-          msUserSelect: 'text'
+          height: "calc(100vh - 200px)", // 80px header + 120px input area
+          overflowY: "scroll",
+          overflowX: "hidden",
+          padding: "16px",
+          backgroundColor: "#0f172a",
+          scrollBehavior: "smooth",
+          cursor: "default",
+          userSelect: "text",
+          WebkitUserSelect: "text",
+          MozUserSelect: "text",
+          msUserSelect: "text",
         }}
       >
         {messages.map((message) => (
@@ -281,65 +314,87 @@ const ChatWindow = () => {
             key={message.id}
             className="no-drag"
             style={{
-              display: 'flex',
-              justifyContent: message.sender === 'user' ? 'flex-end' : 'flex-start',
-              marginBottom: '16px',
-              pointerEvents: 'auto',
-              userSelect: 'text'
+              display: "flex",
+              justifyContent:
+                message.sender === "user" ? "flex-end" : "flex-start",
+              marginBottom: "16px",
+              pointerEvents: "auto",
+              userSelect: "text",
             }}
           >
             <div
               className="no-drag"
               style={{
-                maxWidth: '80%',
-                padding: '12px',
-                borderRadius: '8px',
-                backgroundColor: message.sender === 'user' ? '#3b82f6' : '#1e293b',
-                color: 'white',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                wordWrap: 'break-word',
-                wordBreak: 'break-word',
-                overflowWrap: 'break-word',
-                cursor: 'text',
-                userSelect: 'text',
-                WebkitUserSelect: 'text'
+                maxWidth: "80%",
+                padding: "12px",
+                borderRadius: "8px",
+                backgroundColor:
+                  message.sender === "user" ? "#3b82f6" : "#1e293b",
+                color: "white",
+                boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                wordWrap: "break-word",
+                wordBreak: "break-word",
+                overflowWrap: "break-word",
+                cursor: "text",
+                userSelect: "text",
+                WebkitUserSelect: "text",
               }}
             >
-              <p style={{ 
-                fontSize: '14px', 
-                lineHeight: '1.5', 
-                margin: '0 0 4px 0',
-                wordWrap: 'break-word',
-                userSelect: 'text',
-                cursor: 'text'
-              }}>
+              <p
+                style={{
+                  fontSize: "14px",
+                  lineHeight: "1.5",
+                  margin: "0 0 4px 0",
+                  wordWrap: "break-word",
+                  userSelect: "text",
+                  cursor: "text",
+                }}
+              >
                 {message.text}
               </p>
-              <p style={{ 
-                fontSize: '12px', 
-                opacity: 0.7, 
-                margin: 0,
-                userSelect: 'text',
-                cursor: 'text'
-              }}>
+              <p
+                style={{
+                  fontSize: "12px",
+                  opacity: 0.7,
+                  margin: 0,
+                  userSelect: "text",
+                  cursor: "text",
+                }}
+              >
                 {formatTime(message.timestamp)}
               </p>
             </div>
           </div>
         ))}
-        
+
         {isTyping && (
-          <div className="no-drag" style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '16px' }}>
-            <div className="no-drag" style={{
-              padding: '12px',
-              backgroundColor: '#1e293b',
-              borderRadius: '8px',
-              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-            }}>
+          <div
+            className="no-drag"
+            style={{
+              display: "flex",
+              justifyContent: "flex-start",
+              marginBottom: "16px",
+            }}
+          >
+            <div
+              className="no-drag"
+              style={{
+                padding: "12px",
+                backgroundColor: "#1e293b",
+                borderRadius: "8px",
+                boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+              }}
+            >
               <div className="flex space-x-1">
                 <div className="w-2 h-2 rounded-full animate-bounce bg-chat-secondary"></div>
-                <div className="w-2 h-2 rounded-full animate-bounce bg-chat-secondary" style={{animationDelay: '0.1s'}}></div>
-                <div className="w-2 h-2 rounded-full animate-bounce bg-chat-secondary" style={{animationDelay: '0.2s'}}></div>
+                <div
+                  className="w-2 h-2 rounded-full animate-bounce bg-chat-secondary"
+                  style={{ animationDelay: "0.1s" }}
+                ></div>
+                <div
+                  className="w-2 h-2 rounded-full animate-bounce bg-chat-secondary"
+                  style={{ animationDelay: "0.2s" }}
+                ></div>
               </div>
             </div>
           </div>
@@ -349,48 +404,56 @@ const ChatWindow = () => {
 
       {/* Scroll to bottom button */}
       {!autoScroll && (
-        <div className="no-drag" style={{
-          position: 'absolute',
-          right: '24px',
-          bottom: '140px',
-          zIndex: 10,
-          pointerEvents: 'auto'
-        }}>
+        <div
+          className="no-drag"
+          style={{
+            position: "absolute",
+            right: "24px",
+            bottom: "140px",
+            zIndex: 10,
+            pointerEvents: "auto",
+          }}
+        >
           <button
             className="no-drag"
             onClick={() => {
-              console.log('Scroll to bottom button clicked');
+              console.log("Scroll to bottom button clicked");
               if (messagesContainerRef.current) {
                 const container = messagesContainerRef.current;
                 container.scrollTop = container.scrollHeight;
-                console.log('Scrolled to:', container.scrollTop, 'Max:', container.scrollHeight);
+                console.log(
+                  "Scrolled to:",
+                  container.scrollTop,
+                  "Max:",
+                  container.scrollHeight
+                );
                 setAutoScroll(true);
               }
             }}
             style={{
-              width: '48px',
-              height: '48px',
-              borderRadius: '50%',
-              backgroundColor: '#3b82f6',
-              border: '2px solid white',
-              color: 'white',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-              transition: 'all 0.2s ease',
-              fontSize: '18px',
-              fontWeight: 'bold',
-              pointerEvents: 'auto'
+              width: "48px",
+              height: "48px",
+              borderRadius: "50%",
+              backgroundColor: "#3b82f6",
+              border: "2px solid white",
+              color: "white",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
+              transition: "all 0.2s ease",
+              fontSize: "18px",
+              fontWeight: "bold",
+              pointerEvents: "auto",
             }}
             onMouseEnter={(e) => {
-              e.target.style.backgroundColor = '#2563eb';
-              e.target.style.transform = 'scale(1.1)';
+              e.target.style.backgroundColor = "#2563eb";
+              e.target.style.transform = "scale(1.1)";
             }}
             onMouseLeave={(e) => {
-              e.target.style.backgroundColor = '#3b82f6';
-              e.target.style.transform = 'scale(1)';
+              e.target.style.backgroundColor = "#3b82f6";
+              e.target.style.transform = "scale(1)";
             }}
             title="Scroll to bottom"
           >
@@ -400,17 +463,17 @@ const ChatWindow = () => {
       )}
 
       {/* Input Area */}
-      <div 
+      <div
         style={{
-          height: '120px',
-          padding: '16px',
-          backgroundColor: '#1e293b',
-          borderTop: '1px solid #334155',
-          flexShrink: 0
+          height: "120px",
+          padding: "16px",
+          backgroundColor: "#1e293b",
+          borderTop: "1px solid #334155",
+          flexShrink: 0,
         }}
         className="no-drag"
       >
-        <div style={{ display: 'flex', alignItems: 'end', gap: '12px' }}>
+        <div style={{ display: "flex", alignItems: "end", gap: "12px" }}>
           <textarea
             value={inputValue}
             onChange={handleInputChange}
@@ -418,60 +481,60 @@ const ChatWindow = () => {
             placeholder="Type your message here... (Press Enter to send)"
             style={{
               flex: 1,
-              height: '80px',
-              maxHeight: '80px',
-              minHeight: '80px',
-              padding: '8px 12px',
-              backgroundColor: '#0f172a',
-              border: '1px solid #334155',
-              borderRadius: '8px',
-              color: 'white',
-              fontSize: '14px',
-              lineHeight: '1.5',
-              resize: 'none',
-              overflowY: 'auto',
-              outline: 'none'
+              height: "80px",
+              maxHeight: "80px",
+              minHeight: "80px",
+              padding: "8px 12px",
+              backgroundColor: "#0f172a",
+              border: "1px solid #334155",
+              borderRadius: "8px",
+              color: "white",
+              fontSize: "14px",
+              lineHeight: "1.5",
+              resize: "none",
+              overflowY: "auto",
+              outline: "none",
             }}
             className="chat-input placeholder-chat-secondary"
           />
           <button
             onClick={handleSendMessage}
-            disabled={inputValue.trim() === ''}
+            disabled={inputValue.trim() === ""}
             style={{
-              width: '48px',
-              height: '80px',
-              backgroundColor: inputValue.trim() === '' ? '#64748b' : '#3b82f6',
-              border: 'none',
-              borderRadius: '8px',
-              color: 'white',
-              cursor: inputValue.trim() === '' ? 'not-allowed' : 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              transition: 'background-color 0.2s'
+              width: "48px",
+              height: "80px",
+              backgroundColor: inputValue.trim() === "" ? "#64748b" : "#3b82f6",
+              border: "none",
+              borderRadius: "8px",
+              color: "white",
+              cursor: inputValue.trim() === "" ? "not-allowed" : "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              transition: "background-color 0.2s",
             }}
             onMouseEnter={(e) => {
-              if (inputValue.trim() !== '') {
-                e.target.style.backgroundColor = '#2563eb';
+              if (inputValue.trim() !== "") {
+                e.target.style.backgroundColor = "#2563eb";
               }
             }}
             onMouseLeave={(e) => {
-              if (inputValue.trim() !== '') {
-                e.target.style.backgroundColor = '#3b82f6';
+              if (inputValue.trim() !== "") {
+                e.target.style.backgroundColor = "#3b82f6";
               }
             }}
           >
-            <svg 
-              style={{ width: '20px', height: '20px' }}
-              fill="none" 
-              stroke="currentColor" 
+            <svg
+              style={{ width: "20px", height: "20px" }}
+              fill="none"
+              stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={2} 
-                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" 
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
               />
             </svg>
           </button>

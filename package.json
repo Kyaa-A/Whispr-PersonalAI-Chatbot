@@ -1,7 +1,7 @@
 {
-  "name": "desktop-chatbot",
+  "name": "whispr",
   "version": "1.0.0",
-  "description": "A desktop chatbot application built with Electron and React",
+  "description": "Whispr - Personal AI Chatbot built with Electron and React",
   "main": "public/main.js",
   "scripts": {
     "start": "concurrently \"npm run react-start\" \"wait-on http://localhost:3000 && electron .\"",
@@ -13,7 +13,7 @@
     "dist": "npm run build && electron-builder --publish=never",
     "pack": "npm run build && electron-builder --dir"
   },
-  "keywords": ["electron", "react", "chatbot", "desktop"],
+  "keywords": ["electron", "react", "chatbot", "desktop", "whispr", "ai"],
   "author": "Your Name",
   "license": "MIT",
   "devDependencies": {
@@ -45,8 +45,8 @@
     ]
   },
   "build": {
-    "appId": "com.yourcompany.desktop-chatbot",
-    "productName": "Dialogix - AI Desktop Assistant",
+    "appId": "com.yourcompany.whispr",
+    "productName": "Whispr - Personal AI Chatbot",
     "directories": {
       "output": "dist"
     },
