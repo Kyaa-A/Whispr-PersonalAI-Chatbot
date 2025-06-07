@@ -88,14 +88,20 @@ npm run pack
 desktop-chatbot/
 ├── public/
 │   ├── main.js          # Electron main process
+│   ├── electron.js      # Electron entry point
 │   ├── preload.js       # Preload script for security
-│   ├── index.html       # HTML template
-│   └── favicon.ico      # Icon (replace with your own)
+│   └── index.html       # HTML template
 ├── src/
 │   ├── components/
-│   │   └── ChatWindow.js # Main chat interface with Gemini AI
-│   ├── config/
-│   │   └── gemini.js    # Gemini AI configuration and API
+│   │   ├── ChatWindow.js # Main chat interface
+│   │   ├── Chat/        # Chat-related components
+│   │   └── UI/          # UI components
+│   ├── utils/
+│   │   ├── textFormatter.js # Text formatting utilities
+│   │   └── messageUtils.js  # Message handling utilities
+│   ├── hooks/           # Custom React hooks
+│   ├── constants/       # Application constants
+│   ├── Image/           # Image assets
 │   ├── App.js           # Main React component
 │   ├── index.js         # React entry point
 │   └── index.css        # Tailwind CSS imports
@@ -108,12 +114,12 @@ desktop-chatbot/
 
 ### AI Configuration
 
-The chatbot is now fully integrated with Google Gemini AI. To customize the AI behavior:
+To customize the AI behavior, modify the relevant configuration in your chat components:
 
-1. **API Key**: Update the API key in `src/config/gemini.js` with your own Gemini API key
-2. **Model Settings**: Modify the model configuration in the `getGeminiModel()` function
+1. **API Integration**: Update API keys and endpoints in your chat handling logic
+2. **Model Settings**: Modify model configurations in your chat components
 3. **Custom Prompts**: Add system prompts or conversation context as needed
-4. **Alternative AI**: Replace Gemini with OpenAI, Claude, or other AI services by modifying the `generateResponse` function
+4. **Alternative AI**: Replace or integrate different AI services by modifying the response generation logic
 
 ### Styling
 
@@ -129,12 +135,12 @@ colors: {
 }
 ```
 
-### Icons
+### Icons and Assets
 
-Replace the placeholder `favicon.ico` with your own icon:
-1. Create a 32x32 pixel icon
-2. Save as `public/favicon.ico`
-3. Optionally create `public/assets/tray-icon.png` for a custom tray icon
+Customize the application icons and images:
+1. **Tray Icon**: Add your custom tray icon to the application
+2. **Application Icon**: Set your own application icon in the Electron main process
+3. **UI Assets**: Add custom images to the `src/Image/` directory for use in the interface
 
 ### Window Settings
 
