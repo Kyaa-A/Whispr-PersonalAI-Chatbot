@@ -4,6 +4,7 @@ A modern desktop chatbot application built with Electron, React, and Tailwind CS
 
 ![Image](https://github.com/user-attachments/assets/8bf215f2-57fc-4e49-8704-5c5f3353ec2a)
 ![Image](https://github.com/user-attachments/assets/0261b34c-e138-4e27-a9c1-3c00f559666f)
+https://github.com/user-attachments/assets/a1877f18-3fcd-4f5e-9eca-3ae70aa10ef2
 
 ## Features
 
