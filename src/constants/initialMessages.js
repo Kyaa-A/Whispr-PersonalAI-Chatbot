@@ -1,17 +1,7 @@
 export const INITIAL_MESSAGES = [
   {
     id: 1,
-    text: `Hello! I'm **Whispr**, your personal AI chatbot. How can I assist you today?
-
-## ✨ Rich Text Support ✨
-I support rich formatting like:
-
-- **Bold text** and *italic text*
-- \`Inline code\` and code blocks
-- Numbered lists and bullet points
-- ### Headings and ~~strikethrough~~
-
-Try asking me technical questions and I'll respond with **beautifully formatted** answers! 🚀`,
+    text: `Hello! I'm **Whispr**, your personal AI chatbot. How can I assist you today?`,
     sender: "bot",
     timestamp: new Date(),
   },
