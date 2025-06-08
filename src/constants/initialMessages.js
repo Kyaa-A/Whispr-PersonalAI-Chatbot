@@ -20,7 +20,7 @@ Try asking me technical questions and I'll respond with **beautifully formatted*
 export const MESSAGE_CONFIG = {
   LONG_MESSAGE_THRESHOLD: 200,
   CODE_KEYWORDS: ["```", "function", "class", "import", "const", "let", "var"],
-  PREVIEW_LENGTH: 200,
+  PREVIEW_LENGTH: 160,
 };
 
 export const UI_CONFIG = {

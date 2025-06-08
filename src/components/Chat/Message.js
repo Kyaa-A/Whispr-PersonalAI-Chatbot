@@ -1,6 +1,7 @@
 import React from "react";
 import { isLongMessage, formatTime } from "../../utils/messageUtils";
 import { formatText, formatPreviewText } from "../../utils/textFormatter";
+import { MESSAGE_CONFIG } from "../../constants/initialMessages";
 
 const Message = ({ message, onOpenModal }) => {
   return (
@@ -42,7 +43,7 @@ const Message = ({ message, onOpenModal }) => {
           }}
         >
           {isLongMessage(message.text) 
-            ? <div style={{ opacity: 0.95 }}>{formatPreviewText(message.text)}</div>
+            ? <div style={{ opacity: 0.95 }}>{formatPreviewText(message.text, MESSAGE_CONFIG.PREVIEW_LENGTH)}</div>
             : formatText(message.text)}
         </div>
         {isLongMessage(message.text) && (
