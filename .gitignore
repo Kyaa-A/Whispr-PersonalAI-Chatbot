@@ -84,7 +84,8 @@ dist
 
 # Gatsby files
 .cache/
-public
+# Do not ignore CRA public folder; needed for index.html
+# public
 
 # Storybook build outputs
 .out
