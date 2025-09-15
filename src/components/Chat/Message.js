@@ -41,12 +41,12 @@ const Message = ({ message, onOpenModal }) => {
             userSelect: "text",
             cursor: "text",
           }}
+          className="justified-text break-words message-body"
         >
-          {isLongMessage(message.text) 
-            ? <div style={{ opacity: 0.95 }}>{formatPreviewText(message.text, MESSAGE_CONFIG.PREVIEW_LENGTH)}</div>
-            : formatText(message.text)}
+          {formatText(message.text)}
         </div>
-        {isLongMessage(message.text) && (
+        {/* Only show "View More" for non-code messages that are actually long */}
+        {isLongMessage(message.text) && !message.text.includes("```") && (
           <button
             onClick={() =>
               onOpenModal(

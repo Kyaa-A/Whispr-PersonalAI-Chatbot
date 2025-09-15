@@ -5,11 +5,12 @@
   "main": "public/main.js",
   "homepage": "./",
   "scripts": {
-    "start": "concurrently \"npm run react-start\" \"wait-on http://localhost:3000 && electron .\"",
+    "start": "concurrently \"npm run react-start\" \"wait-on http://localhost:3000 && npm run electron-portable\"",
     "react-start": "react-scripts start",
     "react-build": "react-scripts build",
     "electron-build": "npm run react-build && electron-builder",
     "electron-dev": "ELECTRON_IS_DEV=true electron .",
+    "electron-portable": "cd Whispr-Portable && electron .",
     "build": "npm run react-build",
     "dist": "echo 'Use the Whispr-Portable folder instead!'",
     "pack": "echo 'Use the Whispr-Portable folder instead!'"

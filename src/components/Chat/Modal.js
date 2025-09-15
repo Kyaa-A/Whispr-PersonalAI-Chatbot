@@ -6,9 +6,26 @@ const Modal = ({ isOpen, content, onClose }) => {
   const { copyToClipboard, showCopySuccess, showCopyError } = useCopyToClipboard();
 
   const handleCopy = async () => {
-    const textToCopy = content?.content || "";
-    console.log("Modal copy triggered, content length:", textToCopy.length);
-    
+    const container = document.querySelector(".modal-content-text");
+    const selection = window.getSelection();
+    let textToCopy = content?.content || "";
+
+    // Prefer copying user selection if it belongs to the modal content
+    if (selection && selection.rangeCount > 0 && container) {
+      const selectedText = selection.toString();
+      const anchorNode = selection.anchorNode;
+      const focusNode = selection.focusNode;
+      const belongsToModal =
+        (anchorNode && container.contains(anchorNode)) ||
+        (focusNode && container.contains(focusNode));
+
+      if (belongsToModal && selectedText && selectedText.trim().length > 0) {
+        textToCopy = selectedText;
+      }
+    }
+
+    console.log("Modal copy triggered, length:", (textToCopy || "").length);
+
     const result = await copyToClipboard(textToCopy);
     
     if (result.success) {

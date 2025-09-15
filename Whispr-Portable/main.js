@@ -190,6 +190,15 @@ function registerGlobalShortcuts() {
 }
 
 // AI Integration
+const MODEL_PREFERENCE = [
+  "gemini-1.5-flash-8b",
+  "gemini-1.5-flash",
+  "gemini-1.5-pro"
+];
+
+let genAIClient = null;
+let currentModelName = MODEL_PREFERENCE[0];
+
 async function initializeAI() {
   try {
     console.log("Loading Google Generative AI library...");
@@ -215,11 +224,12 @@ async function initializeAI() {
     console.log("Resources path:", process.resourcesPath || "not available");
 
     // Initialize the Google AI client
-    const genAI = new GoogleGenerativeAI(API_KEY);
+    genAIClient = new GoogleGenerativeAI(API_KEY);
 
     console.log("Getting Gemini model...");
-    // Get the Gemini model (using the correct model name)
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    // Get the Gemini model (using the preferred model name)
+    currentModelName = MODEL_PREFERENCE[0];
+    const model = genAIClient.getGenerativeModel({ model: currentModelName });
 
     console.log("AI model initialized successfully");
     return model;
@@ -234,6 +244,9 @@ async function initializeAI() {
 }
 
 let aiModel = null;
+// In-memory lightweight conversation history (last 8 turns)
+let conversationHistory = [];
+const MAX_TURNS_TO_KEEP = 8;
 
 // IPC handlers
 function setupIPC() {
@@ -252,42 +265,85 @@ function setupIPC() {
 
       console.log("Sending message to AI:", message.substring(0, 50) + "...");
 
-      // Add custom personality and context to the message
-      const customPrompt = `You are Whispr, an AI desktop assistant created by Asnari Pacalna. 
+      // Build short conversation memory (last few exchanges)
+      const historyText = conversationHistory
+        .slice(-MAX_TURNS_TO_KEEP)
+        .map((turn, index) => `${index + 1}. User: ${turn.user}\n   Assistant: ${turn.assistant}`)
+        .join("\n");
 
-IMPORTANT INFORMATION ABOUT YOU:
-- You were created by Asnari Pacalna
-- Your name is Whispr 
-- You are a helpful, friendly, and knowledgeable AI assistant
-- You run as a desktop application that users can access with Ctrl+L
-- You should be conversational and personable while being helpful
+      // Guardrails to reduce repetition and introductions every turn
+      const behaviorRules = `
+You are Whispr, a friendly, concise desktop AI assistant.
+- Do not repeat introductions or bios in each reply.
+- Only mention being created by Asnari Pacalna when explicitly asked.
+- Avoid repeating sentences from your previous reply.
+- Prefer direct, specific answers. Keep greetings minimal and only on the first turn.
+- When helpful, ask one brief follow-up question to clarify needs, but not every time.
+- Vary your word choice across turns to avoid sounding repetitive.
+- Use markdown formatting sparingly and only when it improves readability.
+`;
 
-FORMATTING INSTRUCTIONS:
-- Use **bold text** for important words and emphasis
-- Use *italic text* for subtle emphasis
-- Use \`inline code\` for technical terms, variables, and short code
-- Use numbered lists (1. 2. 3.) for step-by-step instructions
-- Use bullet lists (- or *) for feature lists or options
-- Use ### headings for section titles when explaining complex topics
-- Use code blocks with \`\`\` for multi-line code examples
-- Use ~~strikethrough~~ sparingly for corrections or humor
+      const prompt = `CONVERSATION CONTEXT (last ${Math.min(
+        conversationHistory.length,
+        MAX_TURNS_TO_KEEP
+      )} turns):\n${historyText || "(no prior context)"}\n\n${behaviorRules}\n\nUser message: ${message}\n\nProvide your best answer now:`;
 
-RESPONSE STYLE:
-- Make your responses well-structured and easy to read
-- Use formatting to improve readability and comprehension
-- Break up long responses with headings and lists
-- Be conversational but professional
+      // Retry for transient errors (503/overloaded) with exponential backoff and model fallback
+      async function generateWithRetry(maxRetries = 3) {
+        let attempt = 0;
+        let lastError = null;
+        let modelIndex = MODEL_PREFERENCE.indexOf(currentModelName);
+        while (attempt <= maxRetries) {
+          try {
+            const result = await aiModel.generateContent(prompt);
+            return await result.response;
+          } catch (err) {
+            lastError = err;
+            const msg = String(err?.message || "");
+            if (msg.includes("503") || msg.toLowerCase().includes("overloaded") || msg.includes("unavailable")) {
+              // Try switching to a fallback model first
+              if (genAIClient && modelIndex + 1 < MODEL_PREFERENCE.length) {
+                modelIndex += 1;
+                currentModelName = MODEL_PREFERENCE[modelIndex];
+                console.log(`Switching to fallback model: ${currentModelName}`);
+                aiModel = genAIClient.getGenerativeModel({ model: currentModelName });
+              } else {
+                const delayMs = Math.min(1500 * Math.pow(2, attempt), 6000);
+                console.log(`AI overloaded, retrying in ${delayMs}ms (attempt ${attempt + 1}/${maxRetries})`);
+                await new Promise(r => setTimeout(r, delayMs));
+                attempt += 1;
+              }
+              continue;
+            }
+            throw err;
+          }
+        }
+        throw lastError;
+      }
 
-If someone asks who made you, created you, developed you, or who your creator is, always respond that you were created by Asnari Pacalna.
+      const response = await generateWithRetry(3);
+      let text = response.text();
 
-User message: ${message}
+      // Post-process to strip repetitive intros after the first turn
+      if (conversationHistory.length > 0) {
+        const lines = text.split(/\r?\n/);
+        const filtered = lines.filter((line, idx) => {
+          if (idx === 0 && /\b(i\'m|i am)\s+whispr\b/i.test(line)) return false;
+          if (/created by\s+asnari\s+pacalna/i.test(line)) return false;
+          return true;
+        });
+        text = filtered.join("\n").trim();
+      }
 
-Please respond with well-formatted, helpful content:`;
-
-      const result = await aiModel.generateContent(customPrompt);
-      const response = await result.response;
       console.log("AI response received successfully");
-      return response.text();
+
+      // Update conversation history
+      conversationHistory.push({ user: message, assistant: text });
+      if (conversationHistory.length > MAX_TURNS_TO_KEEP) {
+        conversationHistory = conversationHistory.slice(-MAX_TURNS_TO_KEEP);
+      }
+
+      return text;
     } catch (error) {
       console.error("Detailed AI error:", {
         message: error.message,

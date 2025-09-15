@@ -8,9 +8,8 @@ export const INITIAL_MESSAGES = [
 ];
 
 export const MESSAGE_CONFIG = {
-  LONG_MESSAGE_THRESHOLD: 200,
-  CODE_KEYWORDS: ["```", "function", "class", "import", "const", "let", "var"],
-  PREVIEW_LENGTH: 160,
+  LONG_MESSAGE_THRESHOLD: 300,
+  PREVIEW_LENGTH: 220,
 };
 
 export const UI_CONFIG = {

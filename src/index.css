@@ -27,9 +27,74 @@
     margin: 0;
     padding: 0;
   }
+  img { max-width: 100%; height: auto; }
+
+  /* Subtle floating animation for the landing mascot */
+  @keyframes floatY {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+  }
+
+  .float-slow {
+    animation: floatY 6s ease-in-out infinite;
+  }
+
+  .justified-landing {
+    text-align: justify;
+    text-justify: inter-word;
+  }
+
+  .landing-footer {
+    width: 100%;
+    padding: 20px 24px;
+    color: #94a3b8;
+    border-top: 1px solid #334155;
+    background: rgba(15, 23, 42, 0.6);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+  }
 }
 
 @layer components {
+  .justified-text {
+    /* Container stays left-aligned; paragraphs inside are justified */
+    text-align: left;
+  }
+
+  /* Improve paragraph readability without breaking lists/code */
+  .justified-text p,
+  .message-body p {
+    text-align: justify;
+    text-justify: inter-word;
+    hyphens: auto;
+    overflow-wrap: anywhere;
+    text-wrap: pretty;
+  }
+
+  /* Keep non-paragraph blocks left-aligned to avoid awkward spacing */
+  .message-body ul,
+  .message-body ol,
+  .message-body li,
+  .message-body pre,
+  .message-body code,
+  .message-body h1,
+  .message-body h2,
+  .message-body h3,
+  .message-body h4,
+  .message-body h5,
+  .message-body h6 {
+    text-align: left;
+  }
+
+  /* Make long code blocks wrap nicely inside bubbles */
+  .message-body pre,
+  .message-body code {
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
   .chat-scrollbar {
     scrollbar-width: thin;
     scrollbar-color: #94a3b8 #1e293b;

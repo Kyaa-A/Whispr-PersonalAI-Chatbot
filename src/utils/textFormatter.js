@@ -1,4 +1,111 @@
-import React from 'react';
+import React, { useState } from 'react';
+// Avoid using the global modal copy hook here to ensure we only copy the code block content
+
+// Reusable code block with "Copy code" action
+const CodeBlock = ({ code, language }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Clean the code: remove language marker and any extra whitespace
+    const cleanCode = code.trim()
+      .split('\n')
+      .map(line => line.trimEnd()) // Remove trailing spaces
+      .join('\n');
+      
+    const copyDirect = async (text) => {
+      try {
+        if (window?.electronAPI?.writeText) {
+          window.electronAPI.writeText(text);
+          return true;
+        }
+        if (navigator?.clipboard?.writeText) {
+          await navigator.clipboard.writeText(text);
+          return true;
+        }
+        // Fallback textarea method
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.top = '-1000px';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        const ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        return ok;
+      } catch (err) {
+        console.error('Copy failed:', err);
+        return false;
+      }
+    };
+
+    const ok = await copyDirect(cleanCode);
+    if (ok) {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    }
+  };
+
+  return (
+    <div
+      style={{
+        position: 'relative',
+        backgroundColor: '#0f172a',
+        border: '1px solid #334155',
+        borderRadius: '8px',
+        padding: '12px',
+        paddingTop: '40px',
+        margin: '8px 0',
+        fontFamily: 'monospace',
+        fontSize: '13px',
+        overflow: 'auto',
+      }}
+    >
+      <button
+        onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
+        onClick={handleCopy}
+        className="no-drag"
+        aria-label="Copy code"
+        title={copied ? 'Copied' : 'Copy code'}
+        type="button"
+        tabIndex={0}
+        role="button"
+        style={{
+          position: 'absolute',
+          top: '8px',
+          right: '8px',
+          width: '28px',
+          height: '28px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: copied ? '#16a34a' : 'rgba(59, 130, 246, 0.9)',
+          color: 'white',
+          border: 'none',
+          borderRadius: '9999px',
+          cursor: 'pointer',
+          zIndex: 20,
+          userSelect: 'none',
+          pointerEvents: 'auto'
+        }}
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="9" y="9" width="10" height="10" rx="2" stroke="currentColor" strokeWidth="2"/>
+          <rect x="5" y="5" width="10" height="10" rx="2" stroke="currentColor" strokeWidth="2" opacity="0.6"/>
+        </svg>
+      </button>
+      {language && (
+        <div style={{ position: 'absolute', left: 12, top: 10, opacity: 0.6, fontSize: 12, pointerEvents: 'none', userSelect: 'none' }}>{language}</div>
+      )}
+      <pre style={{ margin: 0, whiteSpace: 'pre-wrap', userSelect: 'text', pointerEvents: 'auto' }}>
+        <code>{code}</code>
+      </pre>
+    </div>
+  );
+};
 
 // Enhanced text formatter that supports multiple formatting options
 export const formatText = (text) => {
@@ -10,6 +117,7 @@ export const formatText = (text) => {
   let listItems = [];
   let isInCodeBlock = false;
   let codeBlockLines = [];
+  let currentCodeLanguage = '';
 
   lines.forEach((line, index) => {
     // Handle code blocks (```)
@@ -17,28 +125,16 @@ export const formatText = (text) => {
       if (isInCodeBlock) {
         // End of code block
         formattedElements.push(
-          <div
-            key={`code-block-${index}`}
-            style={{
-              backgroundColor: '#0f172a',
-              border: '1px solid #334155',
-              borderRadius: '8px',
-              padding: '12px',
-              margin: '8px 0',
-              fontFamily: 'monospace',
-              fontSize: '13px',
-              overflow: 'auto',
-              whiteSpace: 'pre-wrap',
-            }}
-          >
-            {codeBlockLines.join('\n')}
-          </div>
+          <CodeBlock key={`code-block-${index}`} code={codeBlockLines.join('\n')} language={currentCodeLanguage} />
         );
         codeBlockLines = [];
         isInCodeBlock = false;
+        currentCodeLanguage = '';
       } else {
         // Start of code block
         isInCodeBlock = true;
+        const lang = line.trim().slice(3).trim();
+        currentCodeLanguage = lang || '';
       }
       return;
     }
@@ -258,8 +354,12 @@ const formatInlineText = (text) => {
 export const getPlainText = (text) => {
   if (!text) return '';
   
+  // First check if text contains a code block
+  if (text.includes('```')) {
+    return text; // Return full text for code blocks
+  }
+  
   return text
-    .replace(/```[\s\S]*?```/g, '[Code Block]') // Replace code blocks
     .replace(/`([^`]+)`/g, '$1') // Remove inline code formatting
     .replace(/\*\*([^*]+)\*\*/g, '$1') // Remove bold
     .replace(/\*([^*]+)\*/g, '$1') // Remove italic
