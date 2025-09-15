@@ -2,6 +2,7 @@
   "version": 2,
   "framework": "create-react-app",
   "buildCommand": "npm run react-build",
+  "installCommand": "npm ci",
   "outputDirectory": "build",
   "ignoreCommand": "git diff --quiet HEAD^ HEAD src public package.json tailwind.config.js postcss.config.js || exit 1",
   "routes": [
