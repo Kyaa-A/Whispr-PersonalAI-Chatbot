@@ -77,12 +77,20 @@ function createWindow() {
     },
   });
 
-  // Load the app
-  const startUrl = isDev
-    ? "http://localhost:3000"
-    : `file://${path.join(__dirname, "../build/index.html")}`;
+  // Load the app with graceful fallback
+  const devUrl = "http://localhost:3000";
+  const fileUrl = `file://${path.join(__dirname, "../build/index.html")}`;
+  const targetUrl = isDev ? devUrl : fileUrl;
 
-  mainWindow.loadURL(startUrl);
+  mainWindow.loadURL(targetUrl);
+
+  // If dev server is not running, fall back to local build automatically
+  mainWindow.webContents.on("did-fail-load", (_event, errorCode, errorDesc) => {
+    console.log("Primary load failed:", errorCode, errorDesc, "— falling back to local build");
+    if (targetUrl !== fileUrl) {
+      mainWindow.loadURL(fileUrl);
+    }
+  });
 
   // Hide window instead of closing
   mainWindow.on("close", (event) => {
