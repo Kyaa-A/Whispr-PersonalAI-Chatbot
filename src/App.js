@@ -55,7 +55,8 @@ const Landing = () => (
 );
 
 function App() {
-  const isElectron = Boolean(window && window.process && window.process.type);
+  // Detect Electron renderer reliably (preload exposes electronAPI; userAgent also contains 'Electron')
+  const isElectron = Boolean(typeof window !== 'undefined' && window.electronAPI) || /Electron/i.test(navigator.userAgent || '');
   return isElectron ? (
     <div className="App h-screen w-screen bg-chat-bg overflow-hidden m-0 p-0">
       <ChatWindow />
